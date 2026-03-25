@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Service Label -->
+    <key>Label</key>
+    <string>com.exxede.morning-briefing</string>
+
+    <!-- Program and Arguments -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/mando/Documents/morning-briefing/venv/bin/python3</string>
+        <string>/Users/mando/Documents/morning-briefing/main.py</string>
+    </array>
+
+    <!-- Schedule: Daily at 7:00 AM -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>7</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Working Directory -->
+    <key>WorkingDirectory</key>
+    <string>/Users/mando/Documents/morning-briefing</string>
+
+    <!-- Logging -->
+    <key>StandardOutPath</key>
+    <string>/Users/mando/.local/logs/morning-briefing.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/mando/.local/logs/morning-briefing-error.log</string>
+
+    <!-- Environment Variables -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>/Users/mando</string>
+    </dict>
+
+    <!-- Run at Load (for testing) - Remove or set to false for production -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <!-- Keep the job alive if it exits -->
+    <key>KeepAlive</key>
+    <false/>
+
+    <!-- Process Type -->
+    <key>ProcessType</key>
+    <string>Background</string>
+
+    <!-- Nice value (lower priority) -->
+    <key>Nice</key>
+    <integer>1</integer>
+</dict>
+</plist>

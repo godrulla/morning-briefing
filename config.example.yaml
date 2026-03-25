@@ -1,0 +1,85 @@
+# Morning Briefing Configuration
+# Copy this file to config.yaml and customize for your needs
+
+# User Settings
+user:
+  name: "Armando Diaz Silverio"
+  email: "your@email.com"  # Your email address for receiving briefings
+  timezone: "America/Santo_Domingo"  # Punta Cana timezone
+
+# Email Settings
+email:
+  send_to: "your@email.com"  # Can be same as user.email or different
+  subject_prefix: "Morning Briefing"
+  format: "html"  # html or plain
+
+# GitHub Settings
+github:
+  username: "your-github-username"
+  organizations:
+    - "Exxede-Investments"
+    - "ReppingDR"
+    - "Prolici"
+    - "Exxede-dev"
+  include_private: true  # Include private repositories
+  days_lookback: 1  # How many days back to look for activity
+
+# Calendar Settings
+calendar:
+  calendars:
+    - "primary"  # Your primary Google Calendar
+  show_all_day_events: true
+  include_declined: false  # Don't show declined events
+  days_forward: 1  # How many days forward to show (1 = today only)
+
+# GitHub Activity Filters
+github_filters:
+  commits:
+    enabled: true
+    max_results: 20
+  pull_requests:
+    enabled: true
+    states: ["open", "merged"]  # Show open and recently merged PRs
+  issues:
+    enabled: true
+    states: ["open"]
+  mentions:
+    enabled: true
+    max_results: 10
+
+# Email Scanning (for mentions and important messages)
+email_filters:
+  enabled: true
+  days_lookback: 1
+  important_senders: []  # List of important email addresses
+  keywords: ["urgent", "important", "asap", "deadline"]
+  max_results: 10
+
+# Priority Detection (keywords in calendar events and tasks)
+priority_keywords:
+  high: ["urgent", "critical", "asap", "important", "deadline", "launch"]
+  medium: ["review", "meeting", "call", "check", "follow-up"]
+  low: ["optional", "fyi", "info", "update"]
+
+# Blocker Detection Keywords
+blocker_keywords:
+  - "blocked"
+  - "waiting for"
+  - "needs review"
+  - "pending"
+  - "stuck"
+
+# Context MCP Integration
+context_mcp:
+  enabled: true
+  inject_history: true
+  use_attractors: true
+  protocol_shell: true
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "/Users/mando/.local/logs/morning-briefing.log"
+  max_size_mb: 10
+  backup_count: 5
+  console_output: false  # Set to true for debugging

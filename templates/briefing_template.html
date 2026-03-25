@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morning Briefing - {{ date }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .section {
+            padding: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .section-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+        .empty-state {
+            color: #95a5a6;
+            font-style: italic;
+            padding: 10px 0;
+        }
+        .event-list, .commit-list, .pr-list, .issue-list, .blocker-list, .email-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .event-item, .commit-item, .pr-item, .issue-item, .blocker-item, .email-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        .event-item.priority-high {
+            border-left-color: #e74c3c;
+            background-color: #fef5f5;
+        }
+        .event-item.priority-medium {
+            border-left-color: #f39c12;
+            background-color: #fef9f3;
+        }
+        .event-time {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 14px;
+        }
+        .event-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+        .event-details {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .commit-repo {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 14px;
+        }
+        .commit-message {
+            font-size: 15px;
+            margin: 5px 0;
+        }
+        .commit-stats {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+        .commit-stats .additions {
+            color: #27ae60;
+        }
+        .commit-stats .deletions {
+            color: #e74c3c;
+        }
+        .pr-title {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .pr-meta {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        .badge-open {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .badge-merged {
+            background-color: #d6d8ff;
+            color: #4c51bf;
+        }
+        .badge-closed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .badge-high {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .badge-medium {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .priority-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .priority-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+        }
+        .priority-item.high {
+            background-color: #fef5f5;
+            border-left: 4px solid #e74c3c;
+        }
+        .priority-item.medium {
+            background-color: #fef9f3;
+            border-left: 4px solid #f39c12;
+        }
+        .priority-item.normal {
+            background-color: #f8f9fa;
+            border-left: 4px solid #95a5a6;
+        }
+        .priority-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        .footer {
+            padding: 20px 30px;
+            background-color: #f8f9fa;
+            text-align: center;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Good Morning, {{ user_name }}!</h1>
+            <p>{{ date }} - Your Daily Briefing</p>
+        </div>
+
+        <!-- Today's Schedule -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">📅</span>
+                <h2 class="section-title">Today's Schedule</h2>
+            </div>
+            {% if calendar_events %}
+                <ul class="event-list">
+                    {% for event in calendar_events %}
+                    <li class="event-item {% if event.priority %}priority-{{ event.priority }}{% endif %}">
+                        <div class="event-time">{{ event.time_str }}</div>
+                        <div class="event-title">
+                            {{ event.summary }}
+                            {% if event.priority == 'high' %}
+                                <span class="badge badge-high">HIGH PRIORITY</span>
+                            {% elif event.priority == 'medium' %}
+                                <span class="badge badge-medium">IMPORTANT</span>
+                            {% endif %}
+                        </div>
+                        {% if event.location %}
+                        <div class="event-details">📍 {{ event.location }}</div>
+                        {% endif %}
+                        {% if event.attendees|length > 0 %}
+                        <div class="event-details">👥 {{ event.attendees|length }} attendee(s)</div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">No events scheduled for today. Enjoy your free time!</p>
+            {% endif %}
+        </div>
+
+        <!-- Yesterday's Work -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">✅</span>
+                <h2 class="section-title">Yesterday's Accomplishments</h2>
+            </div>
+            {% if commits or merged_prs %}
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-number">{{ commits|length }}</div>
+                        <div class="stat-label">Commits</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">{{ merged_prs|length }}</div>
+                        <div class="stat-label">Merged PRs</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">{{ total_additions }}</div>
+                        <div class="stat-label">Lines Added</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">{{ total_deletions }}</div>
+                        <div class="stat-label">Lines Deleted</div>
+                    </div>
+                </div>
+
+                <!-- Commits -->
+                {% if commits %}
+                <h3 style="margin-top: 25px; margin-bottom: 15px; font-size: 16px;">Commits</h3>
+                <ul class="commit-list">
+                    {% for commit in commits[:10] %}
+                    <li class="commit-item">
+                        <div class="commit-repo">
+                            <a href="{{ commit.repo_url }}" target="_blank">{{ commit.repo_name }}</a>
+                        </div>
+                        <div class="commit-message">
+                            <a href="{{ commit.url }}" target="_blank">{{ commit.message }}</a>
+                        </div>
+                        <div class="commit-stats">
+                            <span class="additions">+{{ commit.additions }}</span>
+                            <span class="deletions">-{{ commit.deletions }}</span>
+                            • {{ commit.files_changed }} file(s) • {{ commit.sha }}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <!-- Merged PRs -->
+                {% if merged_prs %}
+                <h3 style="margin-top: 25px; margin-bottom: 15px; font-size: 16px;">Merged Pull Requests</h3>
+                <ul class="pr-list">
+                    {% for pr in merged_prs %}
+                    <li class="pr-item">
+                        <div class="pr-title">
+                            <span class="badge badge-merged">MERGED</span>
+                            <a href="{{ pr.url }}" target="_blank">{{ pr.title }}</a>
+                        </div>
+                        <div class="pr-meta">
+                            {{ pr.repo_name }} #{{ pr.number }} •
+                            <span class="additions">+{{ pr.additions }}</span>
+                            <span class="deletions">-{{ pr.deletions }}</span>
+                            • {{ pr.changed_files }} file(s)
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% else %}
+                <p class="empty-state">No commits or merged PRs from yesterday.</p>
+            {% endif %}
+        </div>
+
+        <!-- Today's Priorities -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">Today's Priorities</h2>
+            </div>
+            {% if open_prs or open_issues or high_priority_events %}
+                <ul class="priority-list">
+                    {% for event in high_priority_events %}
+                    <li class="priority-item high">
+                        <span class="priority-icon">🔴</span>
+                        <div>
+                            <strong>{{ event.summary }}</strong>
+                            <div style="font-size: 13px; color: #7f8c8d;">📅 {{ event.time_str }}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+
+                    {% for pr in open_prs[:3] %}
+                    <li class="priority-item medium">
+                        <span class="priority-icon">🟡</span>
+                        <div>
+                            <a href="{{ pr.url }}" target="_blank"><strong>Review PR: {{ pr.title }}</strong></a>
+                            <div style="font-size: 13px; color: #7f8c8d;">{{ pr.repo_name }} #{{ pr.number }} • {{ pr.comments }} comment(s)</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+
+                    {% for issue in open_issues[:3] %}
+                    <li class="priority-item normal">
+                        <span class="priority-icon">⚪</span>
+                        <div>
+                            <a href="{{ issue.url }}" target="_blank"><strong>{{ issue.title }}</strong></a>
+                            <div style="font-size: 13px; color: #7f8c8d;">{{ issue.repo_name }} #{{ issue.number }}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">No open priorities at the moment.</p>
+            {% endif %}
+        </div>
+
+        <!-- Blockers & Pending Items -->
+        {% if blockers %}
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">🚧</span>
+                <h2 class="section-title">Blockers & Pending Items</h2>
+            </div>
+            <ul class="blocker-list">
+                {% for blocker in blockers %}
+                <li class="blocker-item">
+                    <div class="pr-title">
+                        <a href="{{ blocker.url }}" target="_blank">{{ blocker.title }}</a>
+                    </div>
+                    <div class="pr-meta">
+                        {{ blocker.repo_name }} #{{ blocker.number }} • {{ blocker.reason }}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Team Updates & Mentions -->
+        {% if mentions or important_emails %}
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">💬</span>
+                <h2 class="section-title">Team Updates & Mentions</h2>
+            </div>
+
+            {% if mentions %}
+            <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 16px;">GitHub Mentions</h3>
+            <ul class="pr-list">
+                {% for mention in mentions[:5] %}
+                <li class="pr-item">
+                    <div class="pr-title">
+                        <span class="badge badge-open">{{ mention.type|upper }}</span>
+                        <a href="{{ mention.url }}" target="_blank">{{ mention.title }}</a>
+                    </div>
+                    <div class="pr-meta">
+                        {{ mention.repo_name }} #{{ mention.number }} • by @{{ mention.author }}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if important_emails %}
+            <h3 style="margin-top: 20px; margin-bottom: 15px; font-size: 16px;">Important Emails</h3>
+            <ul class="email-list">
+                {% for email in important_emails[:5] %}
+                <li class="email-item">
+                    <div class="pr-title">{{ email.subject }}</div>
+                    <div class="pr-meta">From: {{ email.from }}</div>
+                    {% if email.snippet %}
+                    <div style="font-size: 13px; color: #7f8c8d; margin-top: 5px;">{{ email.snippet[:100] }}...</div>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Generated with Morning Briefing Automation</p>
+            <p style="margin-top: 10px;">
+                <a href="https://github.com" target="_blank">View on GitHub</a> •
+                <a href="#" target="_blank">Manage Settings</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Credentials and Secrets
+credentials/
+secrets.yaml
+config.yaml
+token.json
+*.json
+
+# Logs
+logs/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+*.tmp
+*.bak
