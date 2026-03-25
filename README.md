@@ -463,7 +463,7 @@ Potential future enhancements:
 
 ## License
 
-Personal use only. Not for commercial distribution.
+MIT
 
 ---
 
